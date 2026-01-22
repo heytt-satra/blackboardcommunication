@@ -35,7 +35,7 @@ function lerp(p1: number, p2: number, t: number): number {
 }
 
 function createTextTexture(
-    gl: WebGL2RenderingContext | WebGLRenderingContext,
+    gl: any,
     text: string,
     font = "bold 30px monospace",
     color = "black"
@@ -60,7 +60,7 @@ function createTextTexture(
 }
 
 class Title {
-    gl: WebGL2RenderingContext | WebGLRenderingContext;
+    gl: any;
     plane: Mesh;
     renderer: Renderer;
     text: string;
@@ -76,7 +76,7 @@ class Title {
         textColor = "#545050",
         font = "30px sans-serif",
     }: {
-        gl: WebGL2RenderingContext | WebGLRenderingContext;
+        gl: any;
         plane: Mesh;
         renderer: Renderer;
         text: string;
@@ -138,7 +138,7 @@ class Title {
 class Media {
     extra = 0;
     geometry: Plane;
-    gl: WebGL2RenderingContext | WebGLRenderingContext;
+    gl: any;
     image: string;
     index: number;
     length: number;
@@ -180,7 +180,7 @@ class Media {
         font,
     }: {
         geometry: Plane;
-        gl: WebGL2RenderingContext | WebGLRenderingContext;
+        gl: any;
         image: string;
         index: number;
         length: number;
@@ -362,7 +362,7 @@ class GalleryApp {
     scroll: { ease: number; current: number; target: number; last: number; position: number };
     onCheckDebounce: () => void;
     renderer!: Renderer;
-    gl!: WebGL2RenderingContext | WebGLRenderingContext;
+    gl!: any;
     camera!: Camera;
     scene!: Transform;
     planeGeometry!: Plane;
@@ -421,7 +421,7 @@ class GalleryApp {
         });
         this.gl = this.renderer.gl;
         this.gl.clearColor(0, 0, 0, 0);
-        this.container.appendChild(this.gl.canvas);
+        this.container.appendChild(this.gl.canvas as HTMLCanvasElement);
     }
 
     createCamera() {

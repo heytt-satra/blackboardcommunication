@@ -1,0 +1,43 @@
+﻿src/components/ui/CardSwap.tsx(123,25): error TS2554: Expected 1 arguments, but got 0.
+src/components/ui/CardSwap.tsx(229,17): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'ref' does not exist in type 'Partial<CardProps> & Attributes'.
+src/components/ui/CardSwap.tsx(230,45): error TS18046: 'child.props' is of type 'unknown'.
+src/components/ui/CircularGallery.tsx(57,33): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(102,36): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(103,37): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(128,30): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(218,37): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(219,36): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(287,31): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(424,36): error TS2345: Argument of type 'HTMLCanvasElement | OffscreenCanvas' is not assignable to parameter of type 'Node'.
+  Type 'OffscreenCanvas' is missing the following properties from type 'Node': baseURI, childNodes, firstChild, isConnected, and 43 more.
+src/components/ui/CircularGallery.tsx(428,34): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
+src/components/ui/CircularGallery.tsx(438,40): error TS2345: Argument of type 'WebGL2RenderingContext | WebGLRenderingContext' is not assignable to parameter of type 'OGLRenderingContext'.
+  Type 'WebGL2RenderingContext' is not assignable to type 'OGLRenderingContext'.
+    Type 'WebGL2RenderingContext' is not assignable to type 'WebGL2RenderingContext & { renderer: Renderer; canvas: HTMLCanvasElement; }'.
+      Property 'renderer' is missing in type 'WebGL2RenderingContext' but required in type '{ renderer: Renderer; canvas: HTMLCanvasElement; }'.
