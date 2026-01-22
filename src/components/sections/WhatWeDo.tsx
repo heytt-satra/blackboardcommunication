@@ -105,10 +105,9 @@ export default function WhatWeDo() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
-    const [isManuallyScrolling, setIsManuallyScrolling] = useState(false);
 
     const sliderRef = useRef<HTMLDivElement>(null);
-    const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
+    const isProgrammaticScrolling = useRef(false);
 
     useEffect(() => {
         setIsMobile(window.innerWidth < 1024);
@@ -121,69 +120,75 @@ export default function WhatWeDo() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Handle Scroll (Manual Interaction)
-    const handleScroll = () => {
+    // SCROLL HELPER: The ONE place that moves the DOM
+    const scrollToIndex = (index: number) => {
         if (!sliderRef.current) return;
 
-        // Determine which card is centered
-        // Using simple math instead of IntersectionObserver for direct correlation
-        const container = sliderRef.current;
-        const cardWidth = container.scrollWidth / services.length;
-        const scrollPosition = container.scrollLeft + (container.clientWidth / 2);
-        const newIndex = Math.floor(scrollPosition / cardWidth);
+        const card = sliderRef.current.children[index] as HTMLElement;
+        if (card) {
+            isProgrammaticScrolling.current = true;
+            card.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest",
+                inline: "center",
+            });
 
-        // Only update if index changed
-        if (newIndex >= 0 && newIndex < services.length && newIndex !== activeIndex) {
-            // We set a flag to avoid the useEffect hook from scrolling us back
-            setIsManuallyScrolling(true);
-            setActiveIndex(newIndex);
-            setIsPaused(true);
+            // Update state immediately to reflect target
+            setActiveIndex(index);
 
-            // Clear flag after a delay
-            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-            scrollTimeout.current = setTimeout(() => {
-                setIsManuallyScrolling(false);
-                setIsPaused(false);
-            }, 1000);
+            // Release lock after animation
+            setTimeout(() => {
+                isProgrammaticScrolling.current = false;
+            }, 600);
         }
     };
 
-    // Handle Programmatic Change (Auto-play or Tab Click)
-    // Only scroll if NOT manually scrolling
-    useEffect(() => {
-        // If the change came from manual scroll, DO NOT scroll back
-        if (isManuallyScrolling || !isMobile || !sliderRef.current) return;
+    // 1. EVENT: User Scrolls manually
+    const handleScroll = () => {
+        // If code is scrolling, ignore updates to prevent flicker/loops
+        if (isProgrammaticScrolling.current || !sliderRef.current) return;
 
         const container = sliderRef.current;
-        const card = container.children[activeIndex] as HTMLElement;
 
-        if (card) {
-            const scrollLeft = card.offsetLeft - (container.clientWidth - card.clientWidth) / 2;
-            container.scrollTo({
-                left: scrollLeft,
-                behavior: "smooth"
-            });
+        // Calculate index based on scroll position + center offset
+        const cardWidth = container.children[0]?.clientWidth || 300; // Approx or real width
+        const gap = 16; // 1rem gap
+        const totalItemWidth = cardWidth + gap;
+
+        // Center point of container
+        const center = container.scrollLeft + (container.clientWidth / 2);
+        // Find item whose center is closest to container center
+        // Item N center = (N * totalItemWidth) + (cardWidth / 2) + padding... 
+        // Simplified: Just divide scrollLeft by width roughly? No, use Math.round
+
+        // Better strategy: "Which element is most visible?"
+        // Simple math:
+        const index = Math.round(container.scrollLeft / totalItemWidth);
+
+        if (index >= 0 && index < services.length && index !== activeIndex) {
+            setActiveIndex(index);
+            setIsPaused(true);
+            setTimeout(() => setIsPaused(false), 5000);
         }
-    }, [activeIndex, isManuallyScrolling, isMobile]);
+    };
 
-    // Handle Tab Click
+    // 2. EVENT: User Clicks Tab
     const handleTabClick = (index: number) => {
-        setIsManuallyScrolling(false); // Force programmatic scroll
-        setActiveIndex(index);
         setIsPaused(true);
+        scrollToIndex(index);
         setTimeout(() => setIsPaused(false), 5000);
     };
 
-    // Auto-play
+    // 3. EVENT: Auto-Play Timer
     useEffect(() => {
         if (isMobile && !isPaused) {
             const interval = setInterval(() => {
-                setIsManuallyScrolling(false); // Ensure we allow scroll
-                setActiveIndex((prev) => (prev + 1) % services.length);
+                const nextIndex = (activeIndex + 1) % services.length;
+                scrollToIndex(nextIndex);
             }, 3000);
             return () => clearInterval(interval);
         }
-    }, [isMobile, isPaused]);
+    }, [isMobile, isPaused, activeIndex]);
 
     return (
         <section id="what-we-do" className="bg-[#0a0a0a] py-16 md:py-24 overflow-hidden">
@@ -239,7 +244,7 @@ export default function WhatWeDo() {
                             {services.map((service, index) => (
                                 <button
                                     key={service.title}
-                                    onClick={() => handleTabClick(index)}
+                                    onClick={() => handleTabClick(index)} // Click updates position
                                     className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${activeIndex === index
                                             ? "bg-[#F26C21] text-white"
                                             : "bg-[#151515] text-[#a0a0a0] border border-[#1f1f1f]"
@@ -250,19 +255,23 @@ export default function WhatWeDo() {
                             ))}
                         </div>
 
-                        {/* Mobile Slider Cards - Manual + Auto */}
+                        {/* Mobile Slider Cards */}
+                        {/* Changed constraints to ensure scrollability */}
                         <div
                             ref={sliderRef}
                             onScroll={handleScroll}
-                            className="lg:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-8 scrollbar-hide -mx-4 px-4 scroll-smooth"
-                            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                            className="lg:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-8 -mx-4 px-4 scrollbar-hide"
+                            style={{
+                                scrollbarWidth: "none",
+                                msOverflowStyle: "none",
+                                scrollBehavior: "smooth"
+                            }}
                             onTouchStart={() => setIsPaused(true)}
                             onTouchEnd={() => setTimeout(() => setIsPaused(false), 5000)}
                         >
                             {services.map((service, index) => (
                                 <div
                                     key={service.title}
-                                    data-index={index}
                                     className={`flex-shrink-0 w-[85vw] max-w-[320px] snap-center bg-[#151515] border rounded-xl p-5 transition-all duration-300 ${activeIndex === index
                                             ? "border-[#F26C21] scale-[1.02] shadow-lg shadow-[#F26C21]/5"
                                             : "border-[#1f1f1f] opacity-80 scale-95"
@@ -309,7 +318,7 @@ export default function WhatWeDo() {
                             {services.map((_, index) => (
                                 <button
                                     key={index}
-                                    onClick={() => handleTabClick(index)}
+                                    onClick={() => handleTabClick(index)} // Click updates position
                                     className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === index
                                             ? "bg-[#F26C21] w-8"
                                             : "bg-[#333333] w-1.5 hover:bg-[#555555]"
