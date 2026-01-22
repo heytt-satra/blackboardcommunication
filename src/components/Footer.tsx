@@ -16,7 +16,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12">
                     {/* Brand Column - Full width on mobile */}
                     <div className="col-span-2 md:col-span-1 mb-4 md:mb-0">
-                        <Link href="#home" className="inline-flex items-center gap-2 mb-4">
+                        <Link href="#home" className="inline-flex items-center gap-2 mb-3">
                             <div className="w-8 h-8 bg-[#F26C21] rounded-lg flex items-center justify-center">
                                 <svg
                                     viewBox="0 0 24 24"
@@ -28,7 +28,7 @@ export default function Footer() {
                             </div>
                             <span className="text-white font-bold">Blackboard</span>
                         </Link>
-                        <p className="text-[#a0a0a0] text-xs md:text-sm leading-relaxed mb-4 max-w-[280px]">
+                        <p className="text-[#a0a0a0] text-xs md:text-sm leading-relaxed mb-4 max-w-[280px] pl-0">
                             Creating experiences where people connect with brands.
                         </p>
                         {/* Social Icons - Horizontal */}

@@ -361,6 +361,8 @@ class GalleryApp {
     scrollSpeed: number;
     scroll: { ease: number; current: number; target: number; last: number; position: number };
     onCheckDebounce: () => void;
+    isMobile: boolean;
+    touchMultiplier: number;
     renderer!: Renderer;
     gl!: any;
     camera!: Camera;
@@ -403,6 +405,10 @@ class GalleryApp {
         this.scrollSpeed = scrollSpeed;
         this.scroll = { ease: scrollEase, current: 0, target: 0, last: 0, position: 0 };
         this.onCheckDebounce = debounce(this.onCheck.bind(this), 200);
+        // Detect mobile for optimized touch sensitivity
+        this.isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
+        // Higher multiplier for mobile for easier swiping
+        this.touchMultiplier = this.isMobile ? 0.15 : 0.05;
         this.createRenderer();
         this.createCamera();
         this.createScene();
@@ -483,7 +489,8 @@ class GalleryApp {
     onTouchMove(e: MouseEvent | TouchEvent) {
         if (!this.isDown) return;
         const x = "touches" in e ? e.touches[0].clientX : e.clientX;
-        const distance = (this.start - x) * (this.scrollSpeed * 0.025);
+        // Use higher multiplier for smoother, easier swiping
+        const distance = (this.start - x) * (this.scrollSpeed * this.touchMultiplier);
         this.scroll.target = this.scroll.position + distance;
     }
 
