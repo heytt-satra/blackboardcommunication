@@ -16,19 +16,19 @@ const founders = [
         name: "Ankita Vasaikar",
         role: "Co-Founder",
         expertise: "Creative & Strategy",
-        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=500&fit=crop",
-    },
-    {
-        name: "Amit Singh",
-        role: "Co-Founder",
-        expertise: "Production & Execution",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=500&fit=crop",
+        image: "/team/ankita.png",
     },
     {
         name: "Aditya Patni",
         role: "Co-Founder",
         expertise: "Business Development",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop",
+        image: "/team/aditya.png",
+    },
+    {
+        name: "Amit Singh",
+        role: "Co-Founder",
+        expertise: "Production & Execution",
+        image: "/team/amit.png",
     },
 ];
 
@@ -72,7 +72,7 @@ export default function MeetTheCurators() {
                                     <img
                                         src={founder.image}
                                         alt={founder.name}
-                                        className="w-full h-[300px] object-cover"
+                                        className="w-full h-[350px] object-cover object-top"
                                         loading="lazy"
                                     />
                                     <div className="p-4">

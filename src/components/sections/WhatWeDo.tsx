@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/CardSwap";
 
 // Lazy load CardSwap
@@ -105,8 +105,10 @@ export default function WhatWeDo() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
+    const [isManuallyScrolling, setIsManuallyScrolling] = useState(false);
+
     const sliderRef = useRef<HTMLDivElement>(null);
-    const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+    const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         setIsMobile(window.innerWidth < 1024);
@@ -119,54 +121,69 @@ export default function WhatWeDo() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Auto-play functionality for mobile
-    const startAutoPlay = useCallback(() => {
-        if (autoPlayRef.current) clearInterval(autoPlayRef.current);
+    // Handle Scroll (Manual Interaction)
+    const handleScroll = () => {
+        if (!sliderRef.current) return;
 
-        autoPlayRef.current = setInterval(() => {
-            if (!isPaused && isMobile) {
-                setActiveIndex((prev) => (prev + 1) % services.length);
-            }
-        }, 3000);
-    }, [isPaused, isMobile]);
+        // Determine which card is centered
+        // Using simple math instead of IntersectionObserver for direct correlation
+        const container = sliderRef.current;
+        const cardWidth = container.scrollWidth / services.length;
+        const scrollPosition = container.scrollLeft + (container.clientWidth / 2);
+        const newIndex = Math.floor(scrollPosition / cardWidth);
 
-    useEffect(() => {
-        if (isMobile) {
-            startAutoPlay();
+        // Only update if index changed
+        if (newIndex >= 0 && newIndex < services.length && newIndex !== activeIndex) {
+            // We set a flag to avoid the useEffect hook from scrolling us back
+            setIsManuallyScrolling(true);
+            setActiveIndex(newIndex);
+            setIsPaused(true);
+
+            // Clear flag after a delay
+            if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+            scrollTimeout.current = setTimeout(() => {
+                setIsManuallyScrolling(false);
+                setIsPaused(false);
+            }, 1000);
         }
-        return () => {
-            if (autoPlayRef.current) clearInterval(autoPlayRef.current);
-        };
-    }, [isMobile, startAutoPlay]);
+    };
 
-    // Scroll to active card when activeIndex changes
+    // Handle Programmatic Change (Auto-play or Tab Click)
+    // Only scroll if NOT manually scrolling
     useEffect(() => {
-        if (sliderRef.current && isMobile) {
-            const card = sliderRef.current.children[activeIndex] as HTMLElement;
-            if (card) {
-                sliderRef.current.scrollTo({
-                    left: card.offsetLeft - 16,
-                    behavior: "smooth",
-                });
-            }
-        }
-    }, [activeIndex, isMobile]);
+        // If the change came from manual scroll, DO NOT scroll back
+        if (isManuallyScrolling || !isMobile || !sliderRef.current) return;
 
-    const handleCardClick = (index: number) => {
+        const container = sliderRef.current;
+        const card = container.children[activeIndex] as HTMLElement;
+
+        if (card) {
+            const scrollLeft = card.offsetLeft - (container.clientWidth - card.clientWidth) / 2;
+            container.scrollTo({
+                left: scrollLeft,
+                behavior: "smooth"
+            });
+        }
+    }, [activeIndex, isManuallyScrolling, isMobile]);
+
+    // Handle Tab Click
+    const handleTabClick = (index: number) => {
+        setIsManuallyScrolling(false); // Force programmatic scroll
         setActiveIndex(index);
-        // Pause auto-play briefly when user interacts
         setIsPaused(true);
         setTimeout(() => setIsPaused(false), 5000);
     };
 
-    const handleTouchStart = () => {
-        setIsPaused(true);
-    };
-
-    const handleTouchEnd = () => {
-        // Resume auto-play after 5 seconds of no touch
-        setTimeout(() => setIsPaused(false), 5000);
-    };
+    // Auto-play
+    useEffect(() => {
+        if (isMobile && !isPaused) {
+            const interval = setInterval(() => {
+                setIsManuallyScrolling(false); // Ensure we allow scroll
+                setActiveIndex((prev) => (prev + 1) % services.length);
+            }, 3000);
+            return () => clearInterval(interval);
+        }
+    }, [isMobile, isPaused]);
 
     return (
         <section id="what-we-do" className="bg-[#0a0a0a] py-16 md:py-24 overflow-hidden">
@@ -193,7 +210,7 @@ export default function WhatWeDo() {
                             {services.map((service, index) => (
                                 <div
                                     key={service.title}
-                                    onClick={() => handleCardClick(index)}
+                                    onClick={() => handleTabClick(index)}
                                     className={`flex items-center gap-4 p-4 rounded-xl transition-all cursor-pointer ${activeIndex === index
                                             ? "bg-[#F26C21]/10 border border-[#F26C21]"
                                             : "bg-[#151515] border border-[#1f1f1f] hover:border-[#F26C21]/50"
@@ -222,7 +239,7 @@ export default function WhatWeDo() {
                             {services.map((service, index) => (
                                 <button
                                     key={service.title}
-                                    onClick={() => handleCardClick(index)}
+                                    onClick={() => handleTabClick(index)}
                                     className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${activeIndex === index
                                             ? "bg-[#F26C21] text-white"
                                             : "bg-[#151515] text-[#a0a0a0] border border-[#1f1f1f]"
@@ -236,19 +253,20 @@ export default function WhatWeDo() {
                         {/* Mobile Slider Cards - Manual + Auto */}
                         <div
                             ref={sliderRef}
-                            onTouchStart={handleTouchStart}
-                            onTouchEnd={handleTouchEnd}
-                            className="lg:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide -mx-4 px-4"
+                            onScroll={handleScroll}
+                            className="lg:hidden flex gap-4 overflow-x-auto snap-x snap-mandatory pb-8 scrollbar-hide -mx-4 px-4 scroll-smooth"
                             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                            onTouchStart={() => setIsPaused(true)}
+                            onTouchEnd={() => setTimeout(() => setIsPaused(false), 5000)}
                         >
                             {services.map((service, index) => (
                                 <div
                                     key={service.title}
-                                    className={`flex-shrink-0 w-[80vw] max-w-[300px] snap-center bg-[#151515] border rounded-xl p-5 transition-all duration-300 ${activeIndex === index
-                                            ? "border-[#F26C21] scale-[1.02]"
-                                            : "border-[#1f1f1f] opacity-70"
+                                    data-index={index}
+                                    className={`flex-shrink-0 w-[85vw] max-w-[320px] snap-center bg-[#151515] border rounded-xl p-5 transition-all duration-300 ${activeIndex === index
+                                            ? "border-[#F26C21] scale-[1.02] shadow-lg shadow-[#F26C21]/5"
+                                            : "border-[#1f1f1f] opacity-80 scale-95"
                                         }`}
-                                    onClick={() => handleCardClick(index)}
                                 >
                                     {/* Icon */}
                                     <div className="w-12 h-12 rounded-xl bg-[#F26C21]/10 flex items-center justify-center text-[#F26C21] mb-4">
@@ -256,9 +274,14 @@ export default function WhatWeDo() {
                                     </div>
 
                                     {/* Title */}
-                                    <h3 className="text-lg font-bold text-white mb-2">
-                                        {service.title}
-                                    </h3>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h3 className="text-lg font-bold text-white">
+                                            {service.title}
+                                        </h3>
+                                        <span className="text-[#2a2a2a] font-bold text-4xl opacity-20">
+                                            0{index + 1}
+                                        </span>
+                                    </div>
 
                                     {/* Description */}
                                     <p className="text-[#a0a0a0] text-sm leading-relaxed mb-4">
@@ -266,14 +289,14 @@ export default function WhatWeDo() {
                                     </p>
 
                                     {/* Features */}
-                                    <div className="space-y-1.5">
+                                    <div className="space-y-2 bg-black/20 p-3 rounded-lg">
                                         {service.features.map((feature) => (
                                             <div
                                                 key={feature}
                                                 className="flex items-center gap-2 text-xs"
                                             >
                                                 <div className="w-1.5 h-1.5 rounded-full bg-[#F26C21]" />
-                                                <span className="text-white/70">{feature}</span>
+                                                <span className="text-white/80">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -281,24 +304,19 @@ export default function WhatWeDo() {
                             ))}
                         </div>
 
-                        {/* Mobile Pagination Dots with Progress */}
-                        <div className="lg:hidden flex justify-center gap-2 mt-3">
+                        {/* Mobile Pagination Dots */}
+                        <div className="lg:hidden flex justify-center gap-2 -mt-4 mb-4">
                             {services.map((_, index) => (
                                 <button
                                     key={index}
-                                    onClick={() => handleCardClick(index)}
-                                    className={`h-2 rounded-full transition-all duration-300 ${activeIndex === index
+                                    onClick={() => handleTabClick(index)}
+                                    className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === index
                                             ? "bg-[#F26C21] w-8"
-                                            : "bg-[#333333] w-2 hover:bg-[#555555]"
+                                            : "bg-[#333333] w-1.5 hover:bg-[#555555]"
                                         }`}
                                 />
                             ))}
                         </div>
-
-                        {/* Auto-play indicator */}
-                        <p className="lg:hidden text-center text-[#666666] text-xs mt-3">
-                            {isPaused ? "Swipe to explore" : "Auto-playing • Tap to pause"}
-                        </p>
                     </div>
 
                     {/* Right - Card Swap (Desktop only) */}
@@ -312,7 +330,11 @@ export default function WhatWeDo() {
                             height={480}
                             skewAmount={4}
                             easing="elastic"
-                            onCardClick={handleCardClick}
+                            onCardClick={(index) => {
+                                setActiveIndex(index);
+                                setIsPaused(true);
+                                setTimeout(() => setIsPaused(false), 5000);
+                            }}
                         >
                             {services.map((service) => (
                                 <Card key={service.title} customClass="service-card">
