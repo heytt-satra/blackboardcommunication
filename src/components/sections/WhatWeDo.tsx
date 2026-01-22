@@ -209,7 +209,7 @@ export default function WhatWeDo() {
 
                 <div className="grid lg:grid-cols-2 gap-6 md:gap-16 items-start">
                     {/* Left - Service List (Desktop) / Slider (Mobile) */}
-                    <div>
+                    <div className="relative min-w-0 w-full">
                         {/* Desktop Service List */}
                         <div className="hidden lg:block space-y-4">
                             {services.map((service, index) => (
@@ -217,14 +217,14 @@ export default function WhatWeDo() {
                                     key={service.title}
                                     onClick={() => handleTabClick(index)}
                                     className={`flex items-center gap-4 p-4 rounded-xl transition-all cursor-pointer ${activeIndex === index
-                                            ? "bg-[#F26C21]/10 border border-[#F26C21]"
-                                            : "bg-[#151515] border border-[#1f1f1f] hover:border-[#F26C21]/50"
+                                        ? "bg-[#F26C21]/10 border border-[#F26C21]"
+                                        : "bg-[#151515] border border-[#1f1f1f] hover:border-[#F26C21]/50"
                                         }`}
                                 >
                                     <div
                                         className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${activeIndex === index
-                                                ? "bg-[#F26C21] text-white"
-                                                : "bg-[#F26C21]/10 text-[#F26C21]"
+                                            ? "bg-[#F26C21] text-white"
+                                            : "bg-[#F26C21]/10 text-[#F26C21]"
                                             }`}
                                     >
                                         <span className="font-bold">{index + 1}</span>
@@ -246,8 +246,8 @@ export default function WhatWeDo() {
                                     key={service.title}
                                     onClick={() => handleTabClick(index)} // Click updates position
                                     className={`flex-shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all ${activeIndex === index
-                                            ? "bg-[#F26C21] text-white"
-                                            : "bg-[#151515] text-[#a0a0a0] border border-[#1f1f1f]"
+                                        ? "bg-[#F26C21] text-white"
+                                        : "bg-[#151515] text-[#a0a0a0] border border-[#1f1f1f]"
                                         }`}
                                 >
                                     {service.title}
@@ -273,8 +273,8 @@ export default function WhatWeDo() {
                                 <div
                                     key={service.title}
                                     className={`flex-shrink-0 w-[85vw] max-w-[320px] snap-center bg-[#151515] border rounded-xl p-5 transition-all duration-300 ${activeIndex === index
-                                            ? "border-[#F26C21] scale-[1.02] shadow-lg shadow-[#F26C21]/5"
-                                            : "border-[#1f1f1f] opacity-80 scale-95"
+                                        ? "border-[#F26C21] scale-[1.02] shadow-lg shadow-[#F26C21]/5"
+                                        : "border-[#1f1f1f] opacity-80 scale-95"
                                         }`}
                                 >
                                     {/* Icon */}
@@ -314,14 +314,14 @@ export default function WhatWeDo() {
                         </div>
 
                         {/* Mobile Pagination Dots */}
-                        <div className="lg:hidden flex justify-center gap-2 -mt-4 mb-4">
+                        <div className="lg:hidden absolute bottom-2 left-0 w-full flex justify-center gap-2 z-10">
                             {services.map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handleTabClick(index)} // Click updates position
                                     className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === index
-                                            ? "bg-[#F26C21] w-8"
-                                            : "bg-[#333333] w-1.5 hover:bg-[#555555]"
+                                        ? "bg-[#F26C21] w-8"
+                                        : "bg-[#333333] w-1.5 hover:bg-[#555555]"
                                         }`}
                                 />
                             ))}
