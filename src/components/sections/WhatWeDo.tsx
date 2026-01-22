@@ -124,13 +124,21 @@ export default function WhatWeDo() {
     const scrollToIndex = (index: number) => {
         if (!sliderRef.current) return;
 
-        const card = sliderRef.current.children[index] as HTMLElement;
+        const container = sliderRef.current;
+        const card = container.children[index] as HTMLElement;
         if (card) {
             isProgrammaticScrolling.current = true;
-            card.scrollIntoView({
+
+            // Calculate scroll position to center the card
+            const cardWidth = card.offsetWidth;
+            const gap = 16; // 1rem gap
+            const containerWidth = container.clientWidth;
+            const scrollPosition = (index * (cardWidth + gap)) - (containerWidth / 2) + (cardWidth / 2);
+
+            // Use scrollTo instead of scrollIntoView to prevent page auto-scrolling
+            container.scrollTo({
+                left: Math.max(0, scrollPosition),
                 behavior: "smooth",
-                block: "nearest",
-                inline: "center",
             });
 
             // Update state immediately to reflect target
@@ -314,7 +322,7 @@ export default function WhatWeDo() {
                         </div>
 
                         {/* Mobile Pagination Dots */}
-                        <div className="lg:hidden absolute bottom-2 left-0 w-full flex justify-center gap-2 z-10">
+                        <div className="lg:hidden absolute bottom-2 left-1/2 -translate-x-1/2 flex justify-center gap-2 z-10">
                             {services.map((_, index) => (
                                 <button
                                     key={index}
